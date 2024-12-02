@@ -1,4 +1,3 @@
-
 #### Part 1 ####
 
 
@@ -6,7 +5,7 @@
 ## The Red-Nosed reactor safety systems can only tolerate levels
 ## that are either gradually increasing or gradually decreasing.
 ## So, a report only counts as safe if both of the following are true:
-  
+
 ## The levels are either all increasing or all decreasing.
 ## Any two adjacent levels differ by at least one and at most three.
 input <- read.csv("inputs/input_day2.csv", header = F)
@@ -38,37 +37,41 @@ helper_fn_robust <- function(idx) {
   toUse <- which(!is.na(input[idx, ]))
   toUse2 <- toUse[-length(toUse)]
   diffs <- input[idx, toUse[-1]] - input[idx, toUse2]
-  
-  gZ1 = which(diffs>0)
-  lZ1 = which(diffs<0)
 
-  gZ <- setdiff(1:length(diffs), which(diffs > 0)) 
-  lZ <- setdiff(1:length(diffs),which(diffs < 0))
-  
-  if(length(gZ1)<(length(diffs)-1) & length(lZ1)<length(diffs)-1){
+  gZ1 <- which(diffs > 0)
+  lZ1 <- which(diffs < 0)
+
+  gZ <- setdiff(1:length(diffs), which(diffs > 0))
+  lZ <- setdiff(1:length(diffs), which(diffs < 0))
+
+  if (length(gZ1) < (length(diffs) - 1) & length(lZ1) < length(diffs) - 1) {
     return(FALSE)
-  }else{
+  } else {
+    lo <- which(abs(diffs) < 1)
+    gt <- which(abs(diffs) > 3)
 
+    if (length(gZ) < length(lZ)) {
+      problems <- c(gZ, lo, gt)
+    } else if (length(gZ) > length(lZ)) {
+      problems <- c(lZ, lo, gt)
+    } else {
+      problems <- c(lo, gt)
+    }
 
-  lo <- which(abs(diffs) < 1)
-  gt <- which(abs(diffs) > 3)
-
-  if(length(gZ)< length(lZ)){
-    problems <- c(gZ, lo, gt)
-    
-  }else if(length(gZ)>length(lZ)){
-    problems <- c(lZ, lo, gt)
-    
-  }else{
-    problems <- c(lo, gt)
-  }
-
-  answer <- ifelse(length(unique(problems)) > 1, FALSE, TRUE)
-
-  return(answer)
+    if (length(unique(problems)) > 1) {
+      return(FALSE)
+    } else {
+      if (problems == length(diffs)) {
+        return(TRUE)
+      } else {
+        answer <- ifelse(abs(diffs[problems]) + abs(diffs[problems + 1]) > 3, FALSE, TRUE)
+        return(answer)
+      }
+    }
   }
 }
 
+## if you remove one, the new distance might be too big
 
 
 sum(unlist(lapply(1:nrow(input), helper_fn_robust)))
