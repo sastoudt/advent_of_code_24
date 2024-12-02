@@ -8,7 +8,7 @@
 ## Within each pair, figure out how far apart the two numbers are;
 ## you'll need to add up all of those distances.
 
-input <- read.csv("input_day1.csv", header = F)
+input <- read.csv("inputs/input_day1.csv", header = F)
 
 
 input$V1 <- sort(input$V1)
